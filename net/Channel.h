@@ -60,6 +60,11 @@ public:
 		return events_;
 	}
 
+	int fd()
+	{
+		return fd_;
+	}
+
 	int index()
 	{
 		return index_;
