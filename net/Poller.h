@@ -2,11 +2,12 @@
 #define  RABBIT_NET_POLLER_H
 
 #include <vector>
-#include "Channel.h"
+#include <boost/noncopyable.hpp>
 
 namespace Rabbit{
 namespace net{
 class EventLoop;
+class Channel;
 class Poller:boost::noncopyable
 {
 public:	
