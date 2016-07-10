@@ -1,6 +1,7 @@
 #ifndef RABBIT_NET_POLLER_H
 #define  RABBIT_NET_POLLER_H
 
+#include <sys/epoll.h>
 #include <vector>
 #include <boost/noncopyable.hpp>
 
@@ -14,7 +15,6 @@ public:
 	typedef std::vector<struct epoll_event>	EventList;
 	typedef std::vector<Channel*> ChannelList;
 	Poller(EventLoop * loop);
-	~Poller();
 	void Poll(int timeOutMs, ChannelList * activeChannels);
 	void upDateChannel(Channel * channel);
 private:

@@ -21,7 +21,6 @@ public:
 private:
 	ChannelList activeChannels;
 	bool quit_;
-	bool looping_;
 	boost::scoped_ptr<Poller> poller_;
 };
 

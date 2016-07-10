@@ -14,18 +14,19 @@ public:
 	typedef boost::function<void ()> EventCallbackFunction;
 	Channel(EventLoop * loop, int fd);
 
+	void update();
 
-	void setReadCallBack(EventCallbackFunction & func)
+	void setReadCallBack(const EventCallbackFunction & func)
 	{
 		readCallback = func;
 	}
 
-	void setWriteCallBack(EventCallbackFunction & func)
+	void setWriteCallBack(const EventCallbackFunction & func)
 	{
 		writeCallback = func;
 	}
 
-	void setErrorCallBack(EventCallbackFunction & func)
+	void setErrorCallBack(const EventCallbackFunction & func)
 	{
 		errorCallback = func;
 	}
