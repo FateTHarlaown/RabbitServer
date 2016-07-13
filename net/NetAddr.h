@@ -27,6 +27,11 @@ public:
 		}
 
 		bool isValid();
+
+		struct sockaddr_in getAddr()
+		{
+			return addr_;
+		}
 	
 private:
 	struct sockaddr_in addr_;
