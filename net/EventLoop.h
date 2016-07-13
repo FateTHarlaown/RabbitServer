@@ -4,11 +4,11 @@
 #include <boost/scoped_ptr.hpp>
 #include <vector>
 #include <boost/noncopyable.hpp>
+#include "Poller.h"
 
 namespace Rabbit{
 namespace net{
 class Channel;
-class Poller;
 class EventLoop:boost::noncopyable
 {
 public:

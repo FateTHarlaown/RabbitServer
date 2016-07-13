@@ -1,4 +1,5 @@
-#include "Accepter.h"
+#include "Acceptor.h"
+#include <stdio.h>
 #include <boost/bind.hpp>
 
 using namespace Rabbit;
@@ -24,6 +25,7 @@ void Acceptor::handleRead()
 {
 	//now will not accept new connection , just for test;
     int confd = accept(sock_.fd(), NULL, NULL);
-	sleep(2);
 	printf("I accep a client %d\n", confd);
+	sleep(2);	
+	close(confd);
 }
