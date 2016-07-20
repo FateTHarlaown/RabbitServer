@@ -10,7 +10,7 @@ Timer::Timer(TimerCallBack callBack, Rabbit::base::Timestamp expiration, bool re
 
 }
 
-void Timer::restart()
+void Timer::reset()
 {
 	if(repeat_)
 	{

@@ -15,7 +15,7 @@ public:
 	//call the callBack function when the timer expired
 	void run();
 	bool isRepeated();
-	void restart();
+	void reset();
 	Rabbit::base::Timestamp getExpiration();
 
 private:
