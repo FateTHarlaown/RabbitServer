@@ -31,8 +31,16 @@ void EventLoop::stop()
 	quit_ = true;
 }
 
+//update or add a channel
 void EventLoop::upDateChannel(Channel * channel)
 {
 	assert(channel != NULL);
 	poller_->upDateChannel(channel);
 }
+
+//remove the channel
+void EventLoop::removeChannel(Channel * channel)
+{
+	poller_->removeChannel(channel);
+}
+

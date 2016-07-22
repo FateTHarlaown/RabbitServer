@@ -22,6 +22,7 @@ Poller::Poller(EventLoop * loop):ownerLoop_(loop), events_(InitEventsNum)
 	epollfd_ = epollfd;
 }
 
+//poll the events and fill activeChannels with active events
 void Poller::Poll(int timeOutMs, ChannelList * activeChannels)
 {
 	int ret = epoll_wait(epollfd_, &(*events_.begin()), static_cast<int>(events_.size()), timeOutMs);
@@ -47,10 +48,11 @@ void Poller::fillActiveChannels(int num, ChannelList * activeChannels)
 	}
 }
 
+//update or add a channel to the poller
 void Poller::upDateChannel(Channel * channel)
 {
 	int index = channel->index();
-	if(index == kNew)
+	if(index == kNew)//it's a new channel
 	{
 		struct epoll_event event;
 		event.data.ptr = static_cast<void*>(channel);
@@ -58,7 +60,7 @@ void Poller::upDateChannel(Channel * channel)
 		epoll_ctl(epollfd_, AddOperation, channel->fd(), &event);
 		channel->set_index(kAdded);
 	}
-	else if(index == kAdded)
+	else if(index == kAdded)//this channe exists, update it
 	{
 		struct epoll_event event;
 		event.events = channel->events();
@@ -68,4 +70,15 @@ void Poller::upDateChannel(Channel * channel)
 		perror("can not understand this kind of channel!");
 }
 
-
+//reomve a channel from this poller
+void Poller::removeChannel(Channel * channel)
+{
+	int index = channel->index();
+	if(index == kNew)
+		return;
+	struct epoll_event event;
+	event.data.ptr = static_cast<void*>(channel);
+	event.events = channel->events();
+	epoll_ctl(epollfd_, DelOperation, channel->fd(), &event);
+	channel->set_index(kNew);
+}

@@ -24,7 +24,7 @@ public:
 	//in this destructor, the channel shoud be remove and exists Timers were delete
 	~TimerQueue();
 	//add a timer to TimerQueue
-	bool addTimer(Timestamp time, TimerCallBack & cb, int interval);
+	bool addTimer(Timer * timer);
 	//up date the timerChannel_ into the event loop
 	void TimerQueueStart();
 private:

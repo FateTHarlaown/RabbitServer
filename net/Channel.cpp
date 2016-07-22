@@ -26,6 +26,10 @@ void Channel::handleEvent()
 	if(revents_ & (EPOLLIN | EPOLLPRI | EPOLLRDHUP))
 		readCallback();
 	if(revents_ & EPOLLOUT)
-	  writeCallback();
+	    writeCallback();
 }
 
+void Channel::remove()
+{
+	loop_->removeChannel(this);
+}

@@ -17,6 +17,7 @@ public:
 	Poller(EventLoop * loop);
 	void Poll(int timeOutMs, ChannelList * activeChannels);
 	void upDateChannel(Channel * channel);
+	void removeChannel(Channel * channel);
 private:
 	void fillActiveChannels(int num, ChannelList * activeChannels);
 	int epollfd_;

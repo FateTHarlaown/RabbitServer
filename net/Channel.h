@@ -15,6 +15,7 @@ public:
 	Channel(EventLoop * loop, int fd);
 
 	void update();
+	void remove();
 
 	void setReadCallBack(const EventCallbackFunction & func)
 	{

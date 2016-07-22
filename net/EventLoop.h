@@ -15,6 +15,7 @@ public:
 	typedef std::vector<Channel*> ChannelList;
 	EventLoop();
 	void upDateChannel(Channel * channel);
+	void removeChannel(Channel * channel);
 	void loop();
 	void stop();
 
