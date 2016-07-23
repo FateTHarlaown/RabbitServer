@@ -1,7 +1,7 @@
 #ifndef RABBIT_NET_TIMERQUEUE
 #define RABBIT_NET_TIMERQUEUE
 
-#include "../base/Timestamp.h"
+#include "Timestamp.h"
 #include <map>
 #include <vector>
 #include <boost/noncopyable.hpp>
@@ -10,7 +10,6 @@
 namespace Rabbit{
 namespace net{
 
-using namespace Rabbit::base;
 class Timer;
 class EventLoop;
 class Channel;

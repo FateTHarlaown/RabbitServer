@@ -5,7 +5,7 @@
 #include <iostream>
 #include "Timestamp.h"
 using namespace Rabbit;
-using namespace Rabbit::base;
+using namespace Rabbit::net;
 
 
 Timestamp::Timestamp(double microSeconds)
@@ -52,14 +52,13 @@ double Timestamp::nowMicroSeconds()
     return seconds * kMicroSecondsPerSecond + tv.tv_usec;
 }
 
-bool operator<(Timestamp l, Timestamp r)
+bool Rabbit::net::operator<(Timestamp l, Timestamp r)
 {
     return l.microSecondsSinceEpoch() < r.microSecondsSinceEpoch();
 }
 
-bool operator==(Timestamp l, Timestamp r)
+bool Rabbit::net::operator==(Timestamp l, Timestamp r)
 {
-	std::cout << "operator ==" << std::endl;
     return l.microSecondsSinceEpoch() == r.microSecondsSinceEpoch();
 }
 

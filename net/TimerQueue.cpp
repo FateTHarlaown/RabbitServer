@@ -1,4 +1,3 @@
-#include "TimerQueue.h"
 #include "EventLoop.h"
 #include <sys/timerfd.h>
 #include <iterator>
@@ -34,7 +33,7 @@ void TimerQueue::getExpiredTimers()
 	{
 		Timestamp now = Timestamp::now();
 		TimerList::iterator it = timers_.lower_bound(now);
-		assert(it == timers_.end() || now <= it->first);
+		assert(it == timers_.end() || now < it->first || now == it->first);
 		//copy the expired timers to a vector, and delete it's pointer from map
 		copy(timers_.begin(), it, back_inserter(expiredTimers_));
 		timers_.erase(timers_.begin(), it);

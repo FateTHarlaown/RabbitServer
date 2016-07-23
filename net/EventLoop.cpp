@@ -2,13 +2,14 @@
 #include "Poller.h"
 #include <assert.h>
 #include "Channel.h"
+#include "Timer.h"
 
 using namespace Rabbit;
 using namespace Rabbit::net;
 
-EventLoop::EventLoop():quit_(false), poller_(new Poller(this))
+EventLoop::EventLoop():quit_(false), poller_(new Poller(this)), timerQueue_(new TimerQueue(this))
 {
-		
+	timerQueue_->TimerQueueStart();	
 }
 
 void EventLoop::loop()
@@ -44,3 +45,20 @@ void EventLoop::removeChannel(Channel * channel)
 	poller_->removeChannel(channel);
 }
 
+//add a timer in a certain time
+void EventLoop::addTimerRunAt(const Timestamp & time, const TimerCallBack & func)
+{
+	timerQueue_->addTimer(new Timer(func, time, false, 0));
+}
+
+//add a timer, run after delay seconds
+void EventLoop::addTimerRunAfter(double delay, const TimerCallBack & func)
+{
+	timerQueue_->addTimer(new Timer(func, Timestamp::nowAfter(delay), false, 0));
+}
+
+//add a timer, run evevry interval seconds
+void EventLoop::addTimerRunEvery(double interval, const TimerCallBack & func)
+{
+	timerQueue_->addTimer(new Timer(func, Timestamp::nowAfter(interval), true, interval));
+}

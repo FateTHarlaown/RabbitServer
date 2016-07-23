@@ -1,11 +1,11 @@
-#ifndef RABBIT_TIMESTAMP_H
-#define RABBIT_TIMESTAMP_H
+#ifndef RABBIT_NET_TIMESTAMP
+#define RABBIT_NET_TIMESTAMP
 
 #include <sys/types.h>
 #include <string>
 
 namespace Rabbit{
-namespace base{
+namespace net{
 
 class Timestamp
 {
@@ -20,6 +20,8 @@ public:
     static Timestamp nowAfter(double seconds);
     static double nowMicroSeconds();
     static const int kMicroSecondsPerSecond = 1000 * 1000;
+	friend bool operator <(Timestamp l, Timestamp r);
+	friend bool operator ==(Timestamp l, Timestamp r);
 private:
     int64_t _microSecondsSinceEpoch;
 };

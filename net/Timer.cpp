@@ -3,9 +3,8 @@
 
 using namespace Rabbit;
 using namespace Rabbit::net;
-using namespace Rabbit::base;
 
-Timer::Timer(TimerCallBack callBack, Rabbit::base::Timestamp expiration, bool repeat, int interval) : callBack_(callBack), expiration_(expiration), repeat_(repeat), interval_(interval)
+Timer::Timer(TimerCallBack callBack, Timestamp expiration, bool repeat, int interval) : callBack_(callBack), expiration_(expiration), repeat_(repeat), interval_(interval)
 {
 
 }
@@ -32,7 +31,7 @@ bool Timer::isRepeated()
 	return repeat_;
 }
 
-Timestamp Timer::getExpiration()
+Timestamp Timer::getExpiration() 
 {
 	return expiration_;
 }
