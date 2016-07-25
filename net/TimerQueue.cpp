@@ -76,6 +76,13 @@ bool TimerQueue::addTimer(Timer * timer)
 	return true;
 }
 
+
+//add a timer in IO thread
+void TimerQueue::addTimerInLoop(Timer * timer)
+{
+	loop_->RunInLoop(boost::bind(&TimerQueue::addTimer, this, timer));
+}
+
 TimerQueue::~TimerQueue()
 {
 	TimerList::iterator it = timers_.begin();

@@ -33,6 +33,8 @@ private:
 	void getExpiredTimers();
 	//reset the expired timers, if it not repeat, delete it
 	void resetTimers();
+	//add a timer in IO thread
+	void addTimerInLoop(Timer * timer);
 	TimerList timers_;
 	int timerFD_;
 	EventLoop * loop_;
