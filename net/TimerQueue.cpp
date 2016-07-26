@@ -1,4 +1,6 @@
 #include "EventLoop.h"
+#include <iostream>
+#include <stdio.h>
 #include <sys/timerfd.h>
 #include <iterator>
 #include <assert.h>
@@ -50,7 +52,7 @@ void TimerQueue::resetTimers()
 		if(it->second->isRepeated())
 		{
 			it->second->reset();
-			addTimer(it->second);
+			addTimer(it->second);//because the resetTimers will always be called in IO thread. so it is safe to use addTimer here
 		}
 		else//free the expired timers
 		{

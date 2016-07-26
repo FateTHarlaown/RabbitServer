@@ -8,6 +8,7 @@ PROJECT(test_rabbit)
 INCLUDE_DIRECTORIES(
 
 net
+base
 
 )
 
@@ -29,16 +30,13 @@ SET(CMAKE_BUILD_TYPE Debug)
 
 #set extern libraries
 
-SET(LIBRARIES
-
-boost
-
-)
+SET(LIBRARIES pthread)
 
 #add executable file
-
 ADD_EXECUTABLE(test_rabbit ${TEST_RABBIT})
 
 #add link library
+TARGET_LINK_LIBRARIES(test_rabbit ${LIBRARIES})
 
-#TARGET_LINK_LIBRARIES(../bin/rabbit_run ${LIBRARIES})
+
+

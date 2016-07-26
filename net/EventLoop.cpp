@@ -1,4 +1,5 @@
 #include "EventLoop.h"
+#include <stdio.h>
 #include <boost/bind.hpp>
 #include <string>
 #include "Poller.h"
@@ -80,19 +81,19 @@ void EventLoop::removeChannel(Channel * channel)
 //add a timer in a certain time
 void EventLoop::addTimerRunAt(const Timestamp & time, const TimerCallBack & func)
 {
-	timerQueue_->addTimer(new Timer(func, time, false, 0));
+	timerQueue_->addTimerInLoop(new Timer(func, time, false, 0));
 }
 
 //add a timer, run after delay seconds
 void EventLoop::addTimerRunAfter(double delay, const TimerCallBack & func)
 {
-	timerQueue_->addTimer(new Timer(func, Timestamp::nowAfter(delay), false, 0));
+	timerQueue_->addTimerInLoop(new Timer(func, Timestamp::nowAfter(delay), false, 0));
 }
 
 //add a timer, run evevry interval seconds
 void EventLoop::addTimerRunEvery(double interval, const TimerCallBack & func)
 {
-	timerQueue_->addTimer(new Timer(func, Timestamp::nowAfter(interval), true, interval));
+	timerQueue_->addTimerInLoop(new Timer(func, Timestamp::nowAfter(interval), true, interval));
 }
 
 //is this thread has this EventLoop
@@ -141,6 +142,7 @@ void EventLoop::handleRead()
 	{
 		perror("read to wake up io thread failed");
 	}
+	printf("be wakeup\n");
 }
 
 void EventLoop::doPendingFunctors()

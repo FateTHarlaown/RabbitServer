@@ -1,23 +1,34 @@
 #include "EventLoop.h"
+#include <stdio.h>
 #include <boost/bind.hpp>
 #include <sys/timerfd.h>
-#include "Acceptor.h"
 #include <iostream>
+#include <pthread.h>
 
 using namespace Rabbit::net;
 using namespace std;
 
-void timercall()
+EventLoop * g_loop = NULL;
+void timerCall()
 {
-	cout << "I'm timer!!yaho!!!!" << endl;
+	printf("yaho!!timer!!\n");
 }
+void * timerThread(void * arg)
+{
+	pthread_detach(pthread_self());
+	sleep(1);
+	g_loop->addTimerRunEvery(2, boost::bind(&timerCall));
+	printf("I add a cb!\n");
+	return NULL;
+}
+
 
 int main()
 {
 	EventLoop loop;
-	Acceptor ac(&loop, "INADDR_ANY", 65432);
-	ac.registAcceptor();
-	loop.addTimerRunEvery(1, boost::bind(&timercall));
+	g_loop = &loop;
+	pthread_t t;
+	pthread_create(&t, NULL, timerThread, NULL);
 	loop.loop();
 	return 0;
 }

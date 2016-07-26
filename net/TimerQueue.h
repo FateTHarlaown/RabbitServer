@@ -22,10 +22,12 @@ public:
 	TimerQueue(EventLoop * loop);
 	//in this destructor, the channel shoud be remove and exists Timers were delete
 	~TimerQueue();
-	//add a timer to TimerQueue
-	bool addTimer(Timer * timer);
 	//up date the timerChannel_ into the event loop
 	void TimerQueueStart();
+	//add a timer to TimerQueue
+	bool addTimer(Timer * timer);
+	//add a timer in IO thread
+	void addTimerInLoop(Timer * timer);
 private:
 	//bind to the timerChannel_ as readCallBack function
 	void handleRead();
@@ -33,8 +35,6 @@ private:
 	void getExpiredTimers();
 	//reset the expired timers, if it not repeat, delete it
 	void resetTimers();
-	//add a timer in IO thread
-	void addTimerInLoop(Timer * timer);
 	TimerList timers_;
 	int timerFD_;
 	EventLoop * loop_;
