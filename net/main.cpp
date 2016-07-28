@@ -1,4 +1,5 @@
 #include "EventLoop.h"
+#include "EventLoopThread.h"
 #include <stdio.h>
 #include <boost/bind.hpp>
 #include <sys/timerfd.h>
@@ -15,8 +16,8 @@ void timerCall()
 }
 void * timerThread(void * arg)
 {
-	pthread_detach(pthread_self());
-	sleep(1);
+	sleep(4);
+	while(g_loop == NULL);
 	g_loop->addTimerRunEvery(2, boost::bind(&timerCall));
 	printf("I add a cb!\n");
 	return NULL;
@@ -25,11 +26,11 @@ void * timerThread(void * arg)
 
 int main()
 {
-	EventLoop loop;
-	g_loop = &loop;
-	pthread_t t;
-	pthread_create(&t, NULL, timerThread, NULL);
-	loop.loop();
+	pthread_t id;
+	pthread_create(&id, NULL, timerThread, NULL);
+	EventLoopThread EVLT("zhang");
+	g_loop = EVLT.startLoop(); 
+	while(1);
 	return 0;
 }
 

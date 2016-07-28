@@ -1,12 +1,13 @@
 #include "Thread.h"
 #include "Gettid.h"
+#include <stdio.h>
 #include <assert.h>
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 
 using namespace Rabbit;
 using namespace Rabbit::base;
-
+boost::atomic_int Thread::numCreated_(0);
 namespace Rabbit
 {
 namespace CurrentThread
@@ -74,7 +75,7 @@ Thread::Thread(const ThreadFunc & func, const std::string& n)
 		joined_(false),
 		pthreadId_(0),
 		tid_(new pid_t(0)),
-		func_(std::move(func)),
+		func_(func),
 		name_(n)
 {
 	setDefaultName();

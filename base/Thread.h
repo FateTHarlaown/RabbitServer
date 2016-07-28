@@ -2,7 +2,6 @@
 #define RABBIT_BASE_THREAD_H
 
 #include <boost/atomic.hpp>
-
 #include <boost/function.hpp>
 #include <boost/noncopyable.hpp>
 #include <boost/shared_ptr.hpp>
@@ -39,7 +38,7 @@ private:
 	ThreadFunc func_;
 	std::string     name_;
 
-	static boost::atomic<int> numCreated_;
+	static boost::atomic_int numCreated_;
 };
 
 }
