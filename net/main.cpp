@@ -1,36 +1,36 @@
-#include "EventLoop.h"
-#include "EventLoopThread.h"
-#include <stdio.h>
 #include <boost/bind.hpp>
-#include <sys/timerfd.h>
 #include <iostream>
-#include <pthread.h>
+#include "TcpServer.h"
+#include "EventLoop.h"
+#include "NetAddr.h"
 
 using namespace Rabbit::net;
 using namespace std;
 
-EventLoop * g_loop = NULL;
-void timerCall()
+void onConnection(const ConnectionPtr & conn)
 {
-	printf("yaho!!timer!!\n");
-}
-void * timerThread(void * arg)
-{
-	sleep(4);
-	while(g_loop == NULL);
-	g_loop->addTimerRunEvery(2, boost::bind(&timerCall));
-	printf("I add a cb!\n");
-	return NULL;
+	cout << "New connection come! yaho!" << endl;
 }
 
+void onMessage(const ConnectionPtr & conn, const char * data, const ssize_t len)
+{
+	cout << "received " << len << "Bytes" << endl;
+	for(int i = 0; i < len; i++)
+	{
+		cout << data[i];
+	}
+}
 
 int main()
 {
-	pthread_t id;
-	pthread_create(&id, NULL, timerThread, NULL);
-	EventLoopThread EVLT("zhang");
-	g_loop = EVLT.startLoop(); 
-	while(1);
+	EventLoop loop;
+	NetAddr listenAddr("0.0.0.0", 54321);
+	
+	TcpServer myServer(&loop, listenAddr, "yoooo~!");
+	myServer.setConnectionCallback(onConnection);
+	myServer.setMessageCallback(onMessage);
+	myServer.start();
+	loop.loop();
 	return 0;
 }
 

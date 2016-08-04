@@ -15,6 +15,7 @@ class NetAddr
 {
 public:
 	NetAddr(const char * ip, uint16_t port);
+	NetAddr(const struct sockaddr_in addr);
 
 		uint16_t getPort()
 		{
@@ -28,10 +29,14 @@ public:
 
 		bool isValid();
 
-		struct sockaddr_in getAddr()
+		struct sockaddr_in  getAddr()
 		{
 			return addr_;
 		}
+		//get a fd's local address, if failed we will get a NetAddr("0.0.0.0", 0")
+		static NetAddr getLocalAddr(int fd);
+		//get a fd's peer address, if failed we will get a NetAddr("0.0.0.0", 0")
+		static NetAddr getPeerAddr(int fd);
 	
 private:
 	struct sockaddr_in addr_;

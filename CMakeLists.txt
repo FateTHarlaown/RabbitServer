@@ -15,6 +15,7 @@ base
 #source directory
 
 AUX_SOURCE_DIRECTORY(net DIR_SRCS)
+AUX_SOURCE_DIRECTORY(base DIR_SRCS)
 
 #set environment variable
 

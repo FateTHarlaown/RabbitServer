@@ -12,6 +12,7 @@ class Socket:boost::noncopyable
 {
 public:
 	Socket();
+	Socket(int fd);
 	~Socket();
 
 	int fd()
@@ -21,10 +22,11 @@ public:
 	int bindAddr(NetAddr addr);
 	int setNodelay(bool op);
 	int setReuseAddr(bool op);
-	int setReuseport(bool op);
+	int setReusePort(bool op);
 	int startListen();
+	int acceptConnection(NetAddr & peer);
 	int connectTo(NetAddr remoteAddr);
-	static const int BACKLOG = 20;
+	static const int BACKLOG = 200;
 
 private:
 	int fd_;	

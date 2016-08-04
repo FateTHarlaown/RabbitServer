@@ -5,10 +5,10 @@
 using namespace Rabbit;
 using namespace Rabbit::net;
 
-Acceptor::Acceptor(EventLoop * loop, const char * ip, uint16_t port):loop_(loop), addr_(ip, port) ,sock_(), accepChannel_(loop, sock_.fd())
+Acceptor::Acceptor(EventLoop * loop, NetAddr addr):loop_(loop), addr_(addr) ,sock_(), accepChannel_(loop, sock_.fd())
 {
 	sock_.setNodelay(true);
-	sock_.setReuseport(true);
+	sock_.setReusePort(true);
 	sock_.bindAddr(addr_);
 }
 
@@ -20,12 +20,16 @@ void Acceptor::registAcceptor()
 	accepChannel_.update();
 }
 
-
 void Acceptor::handleRead()
 {
-	//now will not accept new connection , just for test;
-    int confd = accept(sock_.fd(), NULL, NULL);
-	printf("I accep a client %d\n", confd);
-	sleep(2);	
-	close(confd);
+	loop_->assertInLoopThread();
+	NetAddr peer("0.0.0.0", 0);
+	int newFd = sock_.acceptConnection(peer);	
+	newConnectionCallback_(newFd, peer);
 }
+
+void Acceptor::setNewConnectionCallback(const NewConnectionCallback & func)
+{
+	newConnectionCallback_ = func;
+}
+

@@ -10,6 +10,11 @@ Socket::Socket():fd_(0)
 	fd_ = socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0);
 }
 
+Socket::Socket(int fd) : fd_(fd)
+{
+
+}
+
 Socket::~Socket()
 {
 	close(fd_);
@@ -77,7 +82,7 @@ int Socket::setReuseAddr(bool op)
 	return ret;
 }
 
-int Socket::setReuseport(bool op)
+int Socket::setReusePort(bool op)
 {
 	int errno_saved = errno, ret;
 	int reusePort;
@@ -108,3 +113,19 @@ int Socket::connectTo(NetAddr addr)
 	return ret;
 }
 		
+int Socket::acceptConnection(NetAddr & peer)
+{
+	int errno_saved = errno, ret;
+	struct sockaddr_in temp;
+	socklen_t len = sizeof temp;
+	ret = accept(fd_, (struct sockaddr *)&temp, &len);
+	if(ret == -1)
+	{
+		perror("acceptConnection fialed!");
+		errno = errno_saved;
+		return ret;
+	}
+	peer = NetAddr(temp);
+	return ret;
+}
+
