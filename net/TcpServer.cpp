@@ -18,7 +18,7 @@ namespace net{
 
 	void defaultMessageCallback(const ConnectionPtr & conn, char * buffer, ssize_t len)
 	{
-		
+	
 	}
 }
 }
@@ -56,6 +56,15 @@ void TcpServer::newConnetion(int fd, const NetAddr  peer)
 	conn->setConnectionCallback(connectionCallback_);
 	connections_[conName] = conn;
 	conn->connectionEstablish();
+}
+
+void TcpServer::removeConnection(const ConnectionPtr & conn)
+{
+	loop_->assertInLoopThread();	
+	std::map<std::string, ConnectionPtr>::iterator it = connections_.find(conn->name());
+	assert(it != connections_.end());
+	connections_.erase(it);
+	loop_->QueueInLoop(boost::bind(&TcpConnection::connectionDestroyed, conn));				
 }
 
 void TcpServer::start()

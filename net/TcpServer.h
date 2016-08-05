@@ -3,6 +3,7 @@
 
 #include <boost/scoped_ptr.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/noncopyable.hpp>
 #include "NetAddr.h"
 #include "Acceptor.h"
 #include <string>
@@ -14,7 +15,8 @@ namespace net{
 
 class EventLoop;
 class TcpConnection;
-class TcpServer{
+class TcpServer:boost::noncopyable
+{
 public:
 	TcpServer(EventLoop * loop, NetAddr addr, std::string name = "Tcp"); 
 	void setConnectionCallback(const ConnectionCallback & func);
@@ -22,6 +24,7 @@ public:
 	void start(); 
 private: 
 	void newConnetion(int fd, const NetAddr peer);
+	void removeConnection(const ConnectionPtr & coon);
 	EventLoop * loop_; 
 	boost::scoped_ptr<Acceptor> acceptor_;	
 	std::string name_;

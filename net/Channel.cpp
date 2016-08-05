@@ -1,4 +1,5 @@
 #include <sys/epoll.h>
+#include <stdio.h>
 #include "Channel.h"
 #include "EventLoop.h"
 using namespace Rabbit;
@@ -21,15 +22,27 @@ void Channel::update()
 
 void Channel::handleEvent()
 {
-	if(revents_ & EPOLLERR)
-		errorCallback();
-	if(revents_ & (EPOLLIN | EPOLLPRI | EPOLLRDHUP))
-		readCallback();
-	if(revents_ & EPOLLOUT)
-	    writeCallback();
+	boost::shared_ptr<void> guard;
+	guard = tie_.lock();
+	if(guard)
+	{
+		if(revents_ & EPOLLERR)
+			if(errorCallback)
+				errorCallback();
+		if(revents_ & EPOLLHUP && !(revents_ & EPOLLIN))
+			if(closeCallback)
+				closeCallback();
+		if(revents_ & (EPOLLIN | EPOLLPRI | EPOLLRDHUP))
+			if(readCallback)
+				readCallback();
+		if(revents_ & EPOLLOUT)
+			if(writeCallback)
+				writeCallback();
+	}
 }
 
 void Channel::remove()
 {
+	disableAll();
 	loop_->removeChannel(this);
 }

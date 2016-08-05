@@ -3,6 +3,7 @@
 
 #include <boost/noncopyable.hpp>
 #include <boost/function.hpp>
+#include <boost/weak_ptr.hpp>
 
 namespace Rabbit{
 namespace net{
@@ -32,14 +33,32 @@ public:
 		errorCallback = func;
 	}
 
+	void setCloseCallBack(const EventCallbackFunction & func)
+	{
+		closeCallback = func;
+	}
+
 	void handleEvent();
 	void enableReading()
 	{
 		events_ |= ReadEvent;
 	}
-	//void enableWriting();
-	//void disableWriting();
-	//void disableAll();
+	void enableWriting()
+	{
+		events_ |= WriteEvent;
+	}
+	void disableWriting()
+	{
+		events_ &= ~WriteEvent;
+	}
+	void disableReading()
+	{
+		events_ &= ~ReadEvent;
+	}
+	void disableAll()
+	{
+		events_ = NoEvent;
+	}
 	void set_revnets(int revents)
 	{
 		revents_ = revents;
@@ -75,6 +94,11 @@ public:
 		return loop_;
 	}
 
+	void tie(const boost::shared_ptr<void> & obj)
+	{
+		tie_ = obj;
+	}
+
 
 private:
 	EventLoop * loop_;
@@ -82,10 +106,13 @@ private:
 	int index_;
 	int events_;
 	int revents_;
+	//channel's owner is tied to it, ensure the owner not die when run EventHandle
+	boost::weak_ptr<void> tie_;
 	/*three call back funtion for three kind of events*/
 	EventCallbackFunction readCallback;
 	EventCallbackFunction writeCallback;
 	EventCallbackFunction errorCallback;
+	EventCallbackFunction closeCallback;
 	const static int NoEvent;
 	const static int ReadEvent;
 	const static int WriteEvent;

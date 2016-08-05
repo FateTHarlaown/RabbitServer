@@ -16,6 +16,7 @@ typedef boost::function<void ()> Functors;
 //callback function for TcpServer and Acceptor
 typedef boost::function<void (ConnectionPtr)> ConnectionCallback;
 typedef boost::function<void (ConnectionPtr, char * buffer, ssize_t len)> MessageCallback;
+typedef boost::function<void (ConnectionPtr)> CloseCallback;
 //Acceptor newConnection callback function
 typedef boost::function<void (int sockfd, Rabbit::net::NetAddr peerAddr)> NewConnectionCallback;
 }

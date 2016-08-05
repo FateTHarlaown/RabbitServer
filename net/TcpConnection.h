@@ -20,12 +20,21 @@ class TcpConnection:boost::noncopyable,
 {
 public:
 	TcpConnection(EventLoop * loop, const std::string & name, int sockfd, const NetAddr & local, const NetAddr & peer);
-	void setMessageCallback(MessageCallback & func);
-	void setConnectionCallback(ConnectionCallback & func);
+	void setMessageCallback(const MessageCallback & func);
+	void setConnectionCallback(const ConnectionCallback & func);
+	void setCloseCallBack(const CloseCallback & func);
 	void connectionEstablish();
+	void connectionDestroyed();
+	std::string name()
+	{
+		return name_;
+	}
 private:
 	void handleRead();
-	enum State {kConnecting, kConnected};
+	void handleClose();
+	void handleWrite();
+	void handleError();
+	enum State {kConnecting, kConnected, kDisconnected};
 	EventLoop * loop_;
 	std::string name_;
 	boost::atomic<State> state_;	
@@ -35,6 +44,7 @@ private:
 	NetAddr peerAddr;
 	ConnectionCallback connectionCallback_;
 	MessageCallback messageCallback_;
+	CloseCallback closeCallback_;
 };
 }
 }

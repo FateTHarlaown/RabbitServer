@@ -37,6 +37,8 @@ public:
 	void addTimerRunEvery(double interval, const TimerCallBack & func);
 	//this function can make the callback function run in EventLoop Thread
 	void RunInLoop(const Functors & func);
+	//insert a callback function to pendingFunctions
+	void QueueInLoop(const Functors & func);
 
 private:
 	int wakeup_fd_;
@@ -53,8 +55,6 @@ private:
 	//the callback function for wakeupChannel_
 	void handleRead();
 	void doPendingFunctors();
-	//insert a callback function to pendingFunctions
-	void QueueInLoop(const Functors & func);
 	//send something to wakeupfd_ to wake EventLoop Thread
 	void wakeup();
 
