@@ -15,12 +15,14 @@ public:
 	void append(const char * source, int len);
 	void append(const std::string & str);
 	//retrieve some data which has been apended to buffer
+	//return how many data are been retieved actualy
 	int retrieve(int len);
 	int retrieveAll();
 	std::string retrieveAsString(int len);
 	std::string retrieveAllAsString();
 	//how many data in the buffer now
 	int readbleBytes();
+	ssize_t readFd(int fd, int * savedErrno);
 private:
 	const char * begin() const
 	{
@@ -36,6 +38,7 @@ private:
 	{
 		return buffer_.capacity()-writeIndex_;
 	}
+	void ensureWritebale(ssize_t len);
 
 	std::vector<char> buffer_;
 	int readIndex_;
