@@ -22,6 +22,11 @@ TcpConnection::TcpConnection(EventLoop * loop, const std::string &name, int sock
 {
 }
 
+TcpConnection::~TcpConnection()
+{
+	printf("des connection %s\n", name_.c_str());
+}
+
 void TcpConnection::setMessageCallback(const MessageCallback & func)
 {
 	messageCallback_ = func;
@@ -60,23 +65,27 @@ void TcpConnection::connectionEstablish()
 	channel_->setCloseCallBack(boost::bind(&TcpConnection::handleClose, this));
 	channel_->setErrorCallBack(boost::bind(&TcpConnection::handleError, this));	
 	channel_->enableReading();
-	channel_->update();
 	channel_->tie(shared_from_this());
+	channel_->update();
 	connectionCallback_(shared_from_this());
 	state_ = kConnected;
 }
 
 void TcpConnection::handleClose()
 {
+	printf("to close connection %s\n", name_.c_str());
 	loop_->assertInLoopThread();	
-	state_ = kDisconnected;	
 	channel_->disableAll();
 	closeCallback_(shared_from_this());
 }
 
+//run in depending functors
 void TcpConnection::connectionDestroyed()
 {
+	
+	printf("remove channel for %s\n", name_.c_str());
 	assert(state_ == kConnected);
+	state_ = kDisconnected;
 	channel_->disableAll();
 	channel_->remove();
 }

@@ -52,8 +52,10 @@ void TcpServer::newConnetion(int fd, const NetAddr  peer)
 	std::string conName = name_ + buf;
 	NetAddr local = NetAddr::getLocalAddr(fd);
 	ConnectionPtr conn(new TcpConnection(loop_, conName, fd, local, peer)); 
+	printf("now, get a new connection: %s", conName.c_str());
 	conn->setMessageCallback(messageCallback_);
 	conn->setConnectionCallback(connectionCallback_);
+	conn->setCloseCallBack(boost::bind(&TcpServer::removeConnection, this, _1));
 	connections_[conName] = conn;
 	conn->connectionEstablish();
 }
@@ -64,6 +66,7 @@ void TcpServer::removeConnection(const ConnectionPtr & conn)
 	std::map<std::string, ConnectionPtr>::iterator it = connections_.find(conn->name());
 	assert(it != connections_.end());
 	connections_.erase(it);
+	printf("pass destroy\n");
 	loop_->QueueInLoop(boost::bind(&TcpConnection::connectionDestroyed, conn));				
 }
 

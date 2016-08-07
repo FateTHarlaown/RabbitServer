@@ -20,6 +20,7 @@ class TcpConnection:boost::noncopyable,
 {
 public:
 	TcpConnection(EventLoop * loop, const std::string & name, int sockfd, const NetAddr & local, const NetAddr & peer);
+	~TcpConnection();
 	void setMessageCallback(const MessageCallback & func);
 	void setConnectionCallback(const ConnectionCallback & func);
 	void setCloseCallBack(const CloseCallback & func);

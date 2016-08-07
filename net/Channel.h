@@ -96,6 +96,7 @@ public:
 
 	void tie(const boost::shared_ptr<void> & obj)
 	{
+		tied_ = true;
 		tie_ = obj;
 	}
 
@@ -107,12 +108,14 @@ private:
 	int events_;
 	int revents_;
 	//channel's owner is tied to it, ensure the owner not die when run EventHandle
+	bool tied_;
 	boost::weak_ptr<void> tie_;
 	/*three call back funtion for three kind of events*/
 	EventCallbackFunction readCallback;
 	EventCallbackFunction writeCallback;
 	EventCallbackFunction errorCallback;
 	EventCallbackFunction closeCallback;
+	void handleEventWithGuard();
 	const static int NoEvent;
 	const static int ReadEvent;
 	const static int WriteEvent;

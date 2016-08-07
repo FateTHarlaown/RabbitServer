@@ -2,6 +2,7 @@
 #define RABBIT_NET_ACCEPTOR
 
 #include <boost/noncopyable.hpp>
+#include <boost/enable_shared_from_this.hpp>
 #include "Channel.h"
 #include "EventLoop.h"
 #include "NetAddr.h"
