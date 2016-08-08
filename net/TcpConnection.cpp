@@ -1,6 +1,7 @@
 #include <string>
 #include <stdio.h>
 #include <boost/bind.hpp>
+#include <errno.h>
 #include "EventLoop.h"
 #include "TcpConnection.h"
 #include "Socket.h"
@@ -44,16 +45,18 @@ void TcpConnection::setCloseCallBack(const CloseCallback & func)
 
 void TcpConnection::handleRead()
 {
-	char buffer[BUFSIZ];
-	ssize_t n = read(channel_->fd(), buffer, BUFSIZ);
+	int savedErrno = 0;
+	int  n = inBuffer_.readFd(channel_->fd(), &savedErrno);
 	if(n > 0)
-		messageCallback_(shared_from_this(), buffer, n);
+		messageCallback_(shared_from_this(), &inBuffer_, Timestamp::now());
 	else if(n == 0)
 	{
 		handleClose();
 	}
 	else
 	{
+		errno = savedErrno;
+		perror("read failed!");
 		handleError();
 	}
 }

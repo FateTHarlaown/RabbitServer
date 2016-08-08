@@ -6,6 +6,7 @@
 #include <boost/atomic.hpp>
 #include <boost/noncopyable.hpp>
 #include <boost/enable_shared_from_this.hpp>
+#include "Buffer.h"
 #include "../base/CallBacks.h"
 
 namespace Rabbit{
@@ -46,6 +47,7 @@ private:
 	ConnectionCallback connectionCallback_;
 	MessageCallback messageCallback_;
 	CloseCallback closeCallback_;
+	Buffer inBuffer_;
 };
 }
 }

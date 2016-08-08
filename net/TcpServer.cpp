@@ -16,7 +16,7 @@ namespace net{
 		printf("New connection establish\n");		
 	}
 
-	void defaultMessageCallback(const ConnectionPtr & conn, char * buffer, ssize_t len)
+	void defaultMessageCallback(const ConnectionPtr & conn, Buffer * buffer, Timestamp receiveTime)
 	{
 	
 	}

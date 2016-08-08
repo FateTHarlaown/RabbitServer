@@ -1,6 +1,7 @@
 #include "Buffer.h"
 #include <assert.h>
 #include <sys/uio.h>
+#include <errno.h>
 
 using namespace Rabbit;
 using namespace Rabbit::net;
@@ -19,9 +20,9 @@ const char * Buffer::peek() const
 	return begin()+readIndex_;
 }
 
-void Buffer::ensureWritebale(ssize_t len)
+void Buffer::ensureWritebale(int len)
 {
-	ssize_t writeAble = writeableBytes();
+	int writeAble = writeableBytes();
 	if(len > writeAble)
 	{
 		if(len-writeAble < readIndex_)
@@ -91,7 +92,7 @@ int Buffer::readbleBytes()
 	return writeIndex_ - readIndex_;
 }
 
-ssize_t Buffer::readFd(int fd, int * savedErrno)
+int Buffer::readFd(int fd, int * savedErrno)
 {
 	struct iovec vec[2];
 	const ssize_t writeAble = writeableBytes();
@@ -99,7 +100,7 @@ ssize_t Buffer::readFd(int fd, int * savedErrno)
 	vec[0].iov_len = writeAble;
 	vec[1].iov_base = extrabuf;
 	vec[1].iov_len = sizeof extrabuf;
-	const ssize_t n = readv(fd, vec, 2);
+	const int n = readv(fd, vec, 2);
 	if(n < 0)
 	{
 		*savedErrno = errno;
