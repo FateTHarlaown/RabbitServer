@@ -60,10 +60,11 @@ void Poller::upDateChannel(Channel * channel)
 		epoll_ctl(epollfd_, AddOperation, channel->fd(), &event);
 		channel->set_index(kAdded);
 	}
-	else if(index == kAdded)//this channe exists, update it
+	else if(index == kAdded)//this channel exists, update it
 	{
 		struct epoll_event event;
 		event.events = channel->events();
+		event.data.ptr = static_cast<void*>(channel);
 		epoll_ctl(epollfd_, ModOperation, channel->fd(), &event);
 	}
 	else

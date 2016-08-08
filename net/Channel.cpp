@@ -11,7 +11,7 @@ const int Channel::NoEvent = 0;
 const int Channel::ReadEvent = EPOLLIN | EPOLLPRI;
 const int Channel::WriteEvent = EPOLLOUT;
 
-Channel::Channel(EventLoop * loop, int fd):loop_(loop), fd_(fd), index_(kNew), events_(0), revents_(0), tied_(false)
+Channel::Channel(EventLoop * loop, int fd):loop_(loop), fd_(fd), index_(kNew), events_(0), revents_(0), tied_(false), writing_(false)
 {
 }
 

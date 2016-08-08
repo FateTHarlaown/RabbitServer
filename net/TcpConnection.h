@@ -27,6 +27,10 @@ public:
 	void setCloseCallBack(const CloseCallback & func);
 	void connectionEstablish();
 	void connectionDestroyed();
+	//void send(const std::string & message);
+	//void send(const char * data, int len);
+	//void shutdown();
+	void closeConnection();
 	std::string name()
 	{
 		return name_;
@@ -36,7 +40,8 @@ private:
 	void handleClose();
 	void handleWrite();
 	void handleError();
-	enum State {kConnecting, kConnected, kDisconnected};
+	void closeConnectionInLoop();
+	enum State {kConnecting, kConnected, kDisconnected, kDisconnecting};
 	EventLoop * loop_;
 	std::string name_;
 	boost::atomic<State> state_;	
@@ -48,6 +53,7 @@ private:
 	MessageCallback messageCallback_;
 	CloseCallback closeCallback_;
 	Buffer inBuffer_;
+	Buffer outBuffer_;
 };
 }
 }

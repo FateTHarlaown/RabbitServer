@@ -77,6 +77,8 @@ void TcpConnection::connectionEstablish()
 void TcpConnection::handleClose()
 {
 	printf("to close connection %s\n", name_.c_str());
+	assert(state_ == kConnected || state_ == kDisconnecting);
+	state_ = kDisconnected;
 	loop_->assertInLoopThread();	
 	channel_->disableAll();
 	closeCallback_(shared_from_this());
@@ -87,13 +89,32 @@ void TcpConnection::connectionDestroyed()
 {
 	
 	printf("remove channel for %s\n", name_.c_str());
-	assert(state_ == kConnected);
-	state_ = kDisconnected;
-	channel_->disableAll();
+	if(state_ == kConnected)
+	{
+		state_ = kDisconnected;
+		channel_->disableAll();
+	}
 	channel_->remove();
 }
 
 void TcpConnection::handleError() 
 {
 	fprintf(stderr, "TcpConnection error\n");
+}
+
+void TcpConnection::closeConnection()
+{
+	if(state_ == kConnected || state_ == kConnecting)
+	{
+		loop_->QueueInLoop(boost::bind(&TcpConnection::closeConnectionInLoop, shared_from_this()));
+	}
+}
+	
+void TcpConnection::closeConnectionInLoop()
+{
+	loop_->assertInLoopThread();
+	if(state_ == kConnected || state_ == kConnecting)
+	{
+		handleClose();
+	}
 }

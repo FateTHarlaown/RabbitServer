@@ -21,6 +21,7 @@ void onMessage(const ConnectionPtr & conn, Buffer * buffer, Timestamp receiveTim
 	cout << "Connection name " << conn->name() << endl;
 	cout << "Time :" << receiveTime.toString() << endl;
 	cout << "That content: " << buffer->retrieveAllAsString() << endl;
+	conn->closeConnection();
 }
 
 

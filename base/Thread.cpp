@@ -108,7 +108,7 @@ void Thread::start()
 	detail::ThreadData* data = new detail::ThreadData(func_, name_, tid_);
 	if (pthread_create(&pthreadId_, NULL, &detail::startThread, data))
 	{
-    started_ = false;
+		started_ = false;
 		delete data; 
 		fprintf(stderr, "create thread failed\n");
 		abort();

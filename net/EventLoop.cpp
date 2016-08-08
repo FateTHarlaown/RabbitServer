@@ -152,6 +152,7 @@ void EventLoop::doPendingFunctors()
 	{
 		MutexLockGuard lock(mutex_);
 		toRun.swap(pendingFunctors_);
+		pendingFunctors_.clear();
 	}
 
 	for(size_t i = 0; i < toRun.size(); i++)
