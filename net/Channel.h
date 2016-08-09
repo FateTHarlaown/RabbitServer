@@ -54,17 +54,18 @@ public:
 	void disableWriting()
 	{
 		events_ &= ~WriteEvent;
-		//update();
+		update();
 		writing_ = false;
 	}
 	void disableReading()
 	{
 		events_ &= ~ReadEvent;
-		//update();
+		update();
 	}
 	void disableAll()
 	{
 		events_ = NoEvent;
+		writing_ = false;
 		update();
 	}
 	void set_revnets(int revents)

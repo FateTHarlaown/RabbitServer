@@ -31,20 +31,21 @@ void Buffer::ensureWritebale(int len)
 			writeIndex_ = writeIndex_ - readIndex_;
 			readIndex_ = 0;
 		}
-	}
-	else
-	{
-		buffer_.resize(writeIndex_+len);
+		else
+		{
+			buffer_.resize(writeIndex_+len);
+		}
 	}
 }
 
 void Buffer::append(const char * source, int len)
 {
 	assert(source != NULL);
-
+	ensureWritebale(len);
 	if(writeableBytes() >= len)
 	{
 		std::copy(source, source+len, begin() + writeIndex_); 	
+		writeIndex_ += len;
 	}
 }
 
@@ -75,14 +76,14 @@ std::string Buffer::retrieveAsString(int len)
 {
 	if(len >= writeIndex_ - readIndex_)
 		len = writeIndex_ - readIndex_;
-	std::string tmp(begin()+readIndex_, len-1);
+	std::string tmp(begin()+readIndex_, len);
 	writeIndex_ = readIndex_ = 0;
 	return tmp;
 }
 
 std::string Buffer::retrieveAllAsString()
 {
-	std::string tmp(begin()+readIndex_, writeIndex_-readIndex_-1);
+	std::string tmp(begin()+readIndex_, writeIndex_-readIndex_);
 	writeIndex_ = readIndex_ = 0;
 	return tmp;
 }

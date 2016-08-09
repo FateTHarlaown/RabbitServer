@@ -49,8 +49,11 @@ void Channel::handleEventWithGuard()
 			if(readCallback)
 				readCallback();
 		if(revents_ & EPOLLOUT)
+		{
+			printf("now to write!");
 			if(writeCallback)
 				writeCallback();
+		}
 }
 
 void Channel::remove()

@@ -27,20 +27,22 @@ public:
 	void setCloseCallBack(const CloseCallback & func);
 	void connectionEstablish();
 	void connectionDestroyed();
-	//void send(const std::string & message);
-	//void send(const char * data, int len);
-	//void shutdown();
 	void closeConnection();
 	std::string name()
 	{
 		return name_;
 	}
+	void send(const std::string & message);
+	void send(const char * data, int len);
 private:
 	void handleRead();
 	void handleClose();
 	void handleWrite();
 	void handleError();
 	void closeConnectionInLoop();
+	void sendInLoop(const std::string & message);
+	void sendInLoop(const char * data, int len);
+
 	enum State {kConnecting, kConnected, kDisconnected, kDisconnecting};
 	EventLoop * loop_;
 	std::string name_;

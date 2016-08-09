@@ -67,9 +67,9 @@ void TcpConnection::connectionEstablish()
 	channel_->setReadCallBack(boost::bind(&TcpConnection::handleRead, this));
 	channel_->setCloseCallBack(boost::bind(&TcpConnection::handleClose, this));
 	channel_->setErrorCallBack(boost::bind(&TcpConnection::handleError, this));	
+	channel_->setWriteCallBack(boost::bind(&TcpConnection::handleWrite,this));
 	channel_->enableReading();
 	channel_->tie(shared_from_this());
-	channel_->update();
 	connectionCallback_(shared_from_this());
 	state_ = kConnected;
 }
@@ -89,7 +89,7 @@ void TcpConnection::connectionDestroyed()
 {
 	
 	printf("remove channel for %s\n", name_.c_str());
-	if(state_ == kConnected)
+	if(state_ == kConnected || state_ == kDisconnecting)
 	{
 		state_ = kDisconnected;
 		channel_->disableAll();
@@ -115,6 +115,97 @@ void TcpConnection::closeConnectionInLoop()
 	loop_->assertInLoopThread();
 	if(state_ == kConnected || state_ == kConnecting)
 	{
-		handleClose();
+		if(!channel_->isWriting())
+		{
+			handleClose();
+		}
+		else
+		{
+			state_ = kDisconnecting;
+		}
+	}
+}
+
+void TcpConnection::send(const std::string & message)
+{
+	send(message.data(), message.size());
+}
+
+void TcpConnection::send(const char * data, int len)
+{
+	if(state_ == kConnected)
+	{
+		if(loop_->isInLoopThread())
+		{
+			sendInLoop(data, len);
+		}
+		else
+		{
+			loop_->RunInLoop(boost::bind(&TcpConnection::sendInLoop, shared_from_this(), data, len));
+		}
+	}
+}
+
+void TcpConnection::sendInLoop(const char * data, int len)
+{
+	loop_->assertInLoopThread();
+	int wroted = 0;
+	//for test
+	//outBuffer_.append("moximoxi", 8);
+	//channel_->enableWriting();
+	if(!channel_->isWriting() && outBuffer_.readbleBytes() == 0)
+	{
+		wroted = write(channel_->fd(), data, len);	
+		if(wroted < 0)
+		{
+			wroted = 0;
+			if(errno != EAGAIN)
+			{
+				perror("");
+				fprintf(stderr, "send message failed in %s\n", name_.c_str());
+			}
+		}
+	}
+	assert(wroted >= 0);
+	if(wroted < len)
+	{
+		printf("put rest data in outBuffer_ \n"); 
+		outBuffer_.append(data+wroted, len-wroted); 
+		if(!channel_->isWriting())
+		{
+			channel_->enableWriting();
+		}
+	}
+}
+
+void TcpConnection::handleWrite()
+{
+	loop_->assertInLoopThread();
+	int wroted = 0;
+	if(channel_->isWriting())
+	{
+		wroted = write(channel_->fd(), outBuffer_.peek(), outBuffer_.readbleBytes());
+		printf("%d bytes can write\n", outBuffer_.readbleBytes());
+		if(wroted > 0)
+		{
+			outBuffer_.retrieve(wroted);
+			if(outBuffer_.readbleBytes() == 0)
+			{
+				channel_->disableWriting();
+				if(state_ == kDisconnecting)
+				{
+					handleClose();
+				}
+			}
+		}
+		else
+		{
+			if(errno != EAGAIN)
+			{
+				printf("writed %d bytes in buffr, ", wroted); 
+				perror("");
+				printf("handleWrite send message failed in %s\n", name_.c_str());
+			}
+		}
 	}
 }
