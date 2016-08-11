@@ -22,6 +22,10 @@ class TcpConnection:boost::noncopyable,
 public:
 	TcpConnection(EventLoop * loop, const std::string & name, int sockfd, const NetAddr & local, const NetAddr & peer);
 	~TcpConnection();
+	EventLoop * getLoop()
+	{
+		return loop_;
+	}
 	void setMessageCallback(const MessageCallback & func);
 	void setConnectionCallback(const ConnectionCallback & func);
 	void setCloseCallBack(const CloseCallback & func);
@@ -34,6 +38,7 @@ public:
 	}
 	void send(const std::string & message);
 	void send(const char * data, int len);
+
 private:
 	void handleRead();
 	void handleClose();

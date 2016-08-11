@@ -25,13 +25,19 @@ namespace net{
 
 TcpServer::TcpServer(EventLoop * loop, NetAddr addr, std::string name)
 					: loop_(loop),
-					  acceptor_(new Acceptor(loop, addr)),
 					  name_(name),
+					  acceptor_(new Acceptor(loop, addr)),
+					  loopsThreadPool_(new EventLoopThreadPool(loop_, name_)),
 					  nextConnectionId_(0),
 					  connectionCallback_(defaultConnectionCallback),
 					  messageCallback_(defaultMessageCallback)
 {
 	
+}
+
+TcpServer::~TcpServer()
+{
+
 }
 
 void TcpServer::setConnectionCallback(const ConnectionCallback & func)
@@ -51,7 +57,8 @@ void TcpServer::newConnetion(int fd, const NetAddr  peer)
 	snprintf(buf, sizeof buf, "#%d", nextConnectionId_++);
 	std::string conName = name_ + buf;
 	NetAddr local = NetAddr::getLocalAddr(fd);
-	ConnectionPtr conn(new TcpConnection(loop_, conName, fd, local, peer)); 
+	EventLoop * ioLoop = loopsThreadPool_->getNextLoop();
+	ConnectionPtr conn(new TcpConnection(ioLoop, conName, fd, local, peer)); 
 	printf("now, get a new connection: %s", conName.c_str());
 	conn->setMessageCallback(messageCallback_);
 	conn->setConnectionCallback(connectionCallback_);
@@ -62,17 +69,29 @@ void TcpServer::newConnetion(int fd, const NetAddr  peer)
 
 void TcpServer::removeConnection(const ConnectionPtr & conn)
 {
+	//this function will be called by TcpConnection in it's ioLoop, but we should remove it's connectionPtr in base loop
+	loop_->RunInLoop(boost::bind(&TcpServer::removeConnectionInLoop, this, conn));
+}
+
+void TcpServer::removeConnectionInLoop(const ConnectionPtr & conn)
+{
 	loop_->assertInLoopThread();	
+	printf("recieved destroy\n");
 	std::map<std::string, ConnectionPtr>::iterator it = connections_.find(conn->name());
 	assert(it != connections_.end());
 	connections_.erase(it);
 	printf("pass destroy\n");
-	loop_->QueueInLoop(boost::bind(&TcpConnection::connectionDestroyed, conn));				
-}
+	EventLoop * ioLoop = conn->getLoop();
+	ioLoop->QueueInLoop(boost::bind(&TcpConnection::connectionDestroyed, conn));				}
 
 void TcpServer::start()
 {
 	acceptor_->setNewConnectionCallback(boost::bind(&TcpServer::newConnetion, this, _1, _2)); 
 	acceptor_->registAcceptor();
+	loopsThreadPool_->start();
 }
 
+void TcpServer::setThreadNum(size_t n)
+{
+	loopsThreadPool_->setThreadNum(n);
+}

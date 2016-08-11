@@ -17,7 +17,6 @@ string message2 = "5555555555555555555555555555555555555555555555555555555555555
 void onConnection(const ConnectionPtr & conn)
 {
 	cout << "New connection come! yaho!" << endl;
-	conn->send("Hey!Gays\n");
 }
 
 void onMessage(const ConnectionPtr & conn, Buffer * buffer, Timestamp receiveTime)
@@ -40,6 +39,7 @@ int main()
 	TcpServer myServer(&loop, listenAddr, "yoooo~!");
 	myServer.setConnectionCallback(onConnection);
 	myServer.setMessageCallback(onMessage);
+	myServer.setThreadNum(5);
 	myServer.start();
 	loop.loop();
 	return 0;
