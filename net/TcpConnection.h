@@ -6,6 +6,7 @@
 #include <boost/atomic.hpp>
 #include <boost/noncopyable.hpp>
 #include <boost/enable_shared_from_this.hpp>
+#include <boost/any.hpp>
 #include "Buffer.h"
 #include "../base/CallBacks.h"
 
@@ -32,6 +33,26 @@ public:
 	void connectionEstablish();
 	void connectionDestroyed();
 	void closeConnection();
+	Buffer * inBuffer()
+	{
+		return &inBuffer_;
+	}
+	Buffer * outBuffer()
+	{
+		return &outBuffer_;
+	}
+	void setContext(const boost::any & context)
+	{
+		context_ = context;
+	}
+	const boost::any & getContext() const
+	{
+		return context_;
+	}
+	boost::any * getMutableContext()
+	{
+		return &context_;
+	}
 	std::string name()
 	{
 		return name_;
@@ -61,6 +82,7 @@ private:
 	CloseCallback closeCallback_;
 	Buffer inBuffer_;
 	Buffer outBuffer_;
+	boost::any context_;
 };
 }
 }
