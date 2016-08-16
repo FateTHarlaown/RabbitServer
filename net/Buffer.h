@@ -14,15 +14,20 @@ public:
 	const char * peek() const;
 	void append(const char * source, int len);
 	void append(const std::string & str);
+	void append(const Buffer * buffer);
 	//retrieve some data which has been apended to buffer
 	//return how many data are been retieved actualy
 	int retrieve(int len);
+	int retrieveUntill(const char * end);
 	int retrieveAll();
+	const char * findEOF(const char * start) const;
 	std::string retrieveAsString(int len);
 	std::string retrieveAllAsString();
 	//how many data in the buffer now
 	int readbleBytes();
 	int readFd(int fd, int * savedErrno);
+	const char * findCLRF(const char * start) const;
+
 private:
 	const char * begin() const
 	{
@@ -44,6 +49,7 @@ private:
 	int readIndex_;
 	int writeIndex_;
 	static const int DEFAULTINITSIZE = 1024;
+	static const char kCLRF[]; 
 };
 }
 }

@@ -1,13 +1,15 @@
 #include "Buffer.h"
 #include <assert.h>
 #include <sys/uio.h>
+#include <string.h>
 #include <errno.h>
+#include <algorithm>
 
 using namespace Rabbit;
 using namespace Rabbit::net;
 
 static char extrabuf[65536];
-
+const char Buffer::kCLRF[] = "\r\n";
 Buffer::Buffer(int initSize):readIndex_(0), writeIndex_(0)
 {
 	if(initSize < DEFAULTINITSIZE)
@@ -52,6 +54,11 @@ void Buffer::append(const char * source, int len)
 void Buffer::append(const std::string & str)
 {
 	append(str.c_str(), str.size());
+}
+
+void Buffer::append(const Buffer * buf)
+{
+	append(buf->peek(), buf->readbleBytes());
 }
 
 int Buffer::retrieve(int len)
@@ -117,4 +124,29 @@ int Buffer::readFd(int fd, int * savedErrno)
 	}
 
 	return n;
+}
+
+const char * Buffer::findCLRF(const char * start) const
+{
+	assert(start >= begin());
+	assert(start <= begin()+writeIndex_);
+	const char * crlf = std::search(start, begin()+writeIndex_, kCLRF, kCLRF+2);
+
+	return crlf == (begin()+writeIndex_) ? NULL : crlf;
+}
+
+int Buffer::retrieveUntill(const char * end)
+{
+	assert(peek() <= end);
+	assert(end <= begin()+writeIndex_);
+	int ret = retrieve(end - peek());
+	return ret;
+}
+
+const char * Buffer::findEOF(const char * start) const
+{
+	assert(peek() <= start);
+	assert(start <= begin()+writeIndex_);
+	const char * eof = (const char *)memchr(start, '\n', begin()+writeIndex_ - start);
+	return eof;
 }

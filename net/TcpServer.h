@@ -25,6 +25,10 @@ public:
 	void setMessageCallback(const MessageCallback & func);
 	void start(); 
 	void setThreadNum(size_t n);
+	EventLoop * getLoop() const 
+	{
+		return loop_;
+	}
 private: 
 	void newConnetion(int fd, const NetAddr peer);
 	void removeConnection(const ConnectionPtr & conn);
