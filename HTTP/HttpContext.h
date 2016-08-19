@@ -10,7 +10,7 @@ namespace net
 
 class Buffer;
 
-class HttpContext : public muduo::copyable
+class HttpContext
 {
 public:
     enum HttpRequestParseState

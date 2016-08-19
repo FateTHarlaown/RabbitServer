@@ -1,6 +1,6 @@
 #ifndef RABBIT_NET_HTTP_HTTPRESPONSE_H
 #define RABBIT_NET_HTTP_HTTPRESPONSE_H
-
+#include <string>
 #include <map>
 
 namespace Rabbit

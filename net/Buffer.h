@@ -14,7 +14,7 @@ public:
 	const char * peek() const;
 	void append(const char * source, int len);
 	void append(const std::string & str);
-	void append(const Buffer * buffer);
+	void append(Buffer * buffer);
 	//retrieve some data which has been apended to buffer
 	//return how many data are been retieved actualy
 	int retrieve(int len);

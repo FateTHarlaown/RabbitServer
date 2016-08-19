@@ -56,7 +56,7 @@ void Buffer::append(const std::string & str)
 	append(str.c_str(), str.size());
 }
 
-void Buffer::append(const Buffer * buf)
+void Buffer::append(Buffer * buf)
 {
 	append(buf->peek(), buf->readbleBytes());
 }

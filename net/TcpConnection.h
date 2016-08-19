@@ -41,6 +41,10 @@ public:
 	{
 		return &outBuffer_;
 	}
+	bool establlished()
+	{
+		return state_ == kConnected;
+	}
 	void setContext(const boost::any & context)
 	{
 		context_ = context;

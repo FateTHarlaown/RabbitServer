@@ -70,8 +70,8 @@ void TcpConnection::connectionEstablish()
 	channel_->setWriteCallBack(boost::bind(&TcpConnection::handleWrite,this));
 	channel_->enableReading();
 	channel_->tie(shared_from_this());
-	connectionCallback_(shared_from_this());
 	state_ = kConnected;
+	connectionCallback_(shared_from_this());
 }
 
 void TcpConnection::handleClose()
