@@ -4,13 +4,16 @@
 #include "../HTTP/HttpServer.h"
 #include "../HTTP/HttpRequest.h"
 #include "../HTTP/HttpResponse.h"
-#include "NetAddr.h"
-#include "Buffer.h"
-#include "Timestamp.h"
+#include "../net/NetAddr.h"
+#include "../net/Buffer.h"
+#include "../net/Timestamp.h"
+#include "../net/IgnoreSigPipe.h"
+
 
 using namespace Rabbit::net;
 using namespace std;
 
+IgnoreSigPipe IGNORE_PIPE;
 extern char favicon[555];
 bool benchmark = false;
 
