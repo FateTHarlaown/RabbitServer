@@ -68,6 +68,7 @@ bool HttpContext::parseRequest(Buffer* buf, Timestamp receiveTime)
                 }
                 else
                 {
+					printf("No header after request\n");
                     hasMore = false;
                 }
             }

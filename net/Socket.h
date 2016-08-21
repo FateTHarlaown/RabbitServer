@@ -29,6 +29,7 @@ public:
 	static const int BACKLOG = 200;
 
 private:
+	void setNoBlock();
 	int fd_;	
 };
 }

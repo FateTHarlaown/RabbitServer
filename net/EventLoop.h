@@ -29,6 +29,10 @@ public:
 	bool isInLoopThread();
 	//for debug
 	void assertInLoopThread();
+	pid_t getThreadId()
+	{
+		return threadId_;
+	}
 	//add a timer in a certain time
 	void addTimerRunAt(const Timestamp & time, const TimerCallBack & func);
 	//add a timer, run after delay seconds

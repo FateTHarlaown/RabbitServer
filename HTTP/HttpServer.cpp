@@ -50,10 +50,7 @@ void HttpServer::onMessage(const ConnectionPtr& conn, Buffer* buf, Timestamp rec
 {
 	HttpContext* context = boost::any_cast<HttpContext>(conn->getMutableContext());
 	const char * spaceLine = buf->peek() + buf->readbleBytes() - 4 ;
-	for(int i = 0; i < 4; i++)
-	{
-		printf("%d\n", *(spaceLine+i));
-	}
+	printf("Now receved %d bytes\n", buf->readbleBytes());
 	if(strncmp(spaceLine, "\r\n\r\n", 4) == 0)
 	{
 		printf("now can parse request\n");

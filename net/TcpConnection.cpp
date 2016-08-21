@@ -51,13 +51,14 @@ void TcpConnection::handleRead()
 		messageCallback_(shared_from_this(), &inBuffer_, Timestamp::now());
 	else if(n == 0)
 	{
+		printf("%s receieve 0 bytes, so close it\n", name_.c_str());
 		handleClose();
 	}
 	else
 	{
+		printf("%s read failed! moxi moxi\n", name_.c_str());
 		errno = savedErrno;
-		perror("read failed!");
-		handleError();
+		//handleError();
 	}
 }
 
@@ -76,12 +77,14 @@ void TcpConnection::connectionEstablish()
 
 void TcpConnection::handleClose()
 {
-	printf("to close connection %s\n", name_.c_str());
-	assert(state_ == kConnected || state_ == kDisconnecting);
-	state_ = kDisconnected;
-	loop_->assertInLoopThread();	
-	channel_->disableAll();
-	closeCallback_(shared_from_this());
+	if(state_ == kDisconnecting || state_ == kConnected) 
+	{
+		printf("%ld to close connection %s\n", gettid(), name_.c_str());
+		state_ = kDisconnected;
+		loop_->assertInLoopThread();	
+		channel_->disableAll();
+		closeCallback_(shared_from_this());
+	}
 }
 
 //run in depending functors
@@ -99,7 +102,8 @@ void TcpConnection::connectionDestroyed()
 
 void TcpConnection::handleError() 
 {
-	fprintf(stderr, "TcpConnection error\n");
+	fprintf(stderr, "TcpConnection error in %s in %ld\n", name_.c_str(), gettid());
+	perror("Conn errno");
 }
 
 void TcpConnection::closeConnection()

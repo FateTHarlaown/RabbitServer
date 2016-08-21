@@ -1,5 +1,6 @@
 #include "Socket.h"
 #include <errno.h>
+#include <fcntl.h>
 #include <netinet/tcp.h>
 #include <stdio.h>
 using namespace Rabbit;
@@ -8,11 +9,12 @@ using namespace Rabbit::net;
 Socket::Socket():fd_(0)
 {
 	fd_ = socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0);
+	setNoBlock();
 }
 
 Socket::Socket(int fd) : fd_(fd)
 {
-
+	setNoBlock();
 }
 
 Socket::~Socket()
@@ -129,3 +131,9 @@ int Socket::acceptConnection(NetAddr & peer)
 	return ret;
 }
 
+void Socket::setNoBlock()
+{
+	int option = fcntl(fd_, F_GETFL);
+	option = option | O_NONBLOCK; 
+	fcntl(fd_, F_SETFL, option);
+}

@@ -32,7 +32,7 @@ TcpServer::TcpServer(EventLoop * loop, NetAddr addr, std::string name)
 					  connectionCallback_(defaultConnectionCallback),
 					  messageCallback_(defaultMessageCallback)
 {
-	
+	printf("TCPserver init in loop %d\n", loop_->getThreadId());	
 }
 
 TcpServer::~TcpServer()
@@ -58,8 +58,9 @@ void TcpServer::newConnetion(int fd, const NetAddr  peer)
 	std::string conName = name_ + buf;
 	NetAddr local = NetAddr::getLocalAddr(fd);
 	EventLoop * ioLoop = loopsThreadPool_->getNextLoop();
+	printf("now, get a new IO loop for a new conn, it is %d\n", ioLoop->getThreadId());
 	ConnectionPtr conn(new TcpConnection(ioLoop, conName, fd, local, peer)); 
-	printf("now, get a new connection: %s", conName.c_str());
+	printf("now, set a new connection: %s\n", conName.c_str());
 	conn->setMessageCallback(messageCallback_);
 	conn->setConnectionCallback(connectionCallback_);
 	conn->setCloseCallBack(boost::bind(&TcpServer::removeConnection, this, _1));
@@ -76,13 +77,14 @@ void TcpServer::removeConnection(const ConnectionPtr & conn)
 void TcpServer::removeConnectionInLoop(const ConnectionPtr & conn)
 {
 	loop_->assertInLoopThread();	
-	printf("recieved destroy\n");
+	printf("recieved destroy from %s\n", conn->name().c_str());
 	std::map<std::string, ConnectionPtr>::iterator it = connections_.find(conn->name());
 	assert(it != connections_.end());
 	connections_.erase(it);
-	printf("pass destroy\n");
+	printf("pass destroy for %s\n", conn->name().c_str());
 	EventLoop * ioLoop = conn->getLoop();
-	ioLoop->QueueInLoop(boost::bind(&TcpConnection::connectionDestroyed, conn));				}
+	ioLoop->QueueInLoop(boost::bind(&TcpConnection::connectionDestroyed, conn));			
+}
 
 void TcpServer::start()
 {

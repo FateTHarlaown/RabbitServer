@@ -14,10 +14,9 @@ Acceptor::Acceptor(EventLoop * loop, NetAddr addr):loop_(loop), addr_(addr) ,soc
 
 void Acceptor::registAcceptor()
 {
+	accepChannel_.setReadCallBack(boost::bind(&Acceptor::handleRead, this));
 	sock_.startListen();
 	accepChannel_.enableReading();
-	accepChannel_.setReadCallBack(boost::bind(&Acceptor::handleRead, this));
-	accepChannel_.update();
 }
 
 void Acceptor::handleRead()
