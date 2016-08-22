@@ -65,8 +65,8 @@ public:
 	void disableAll()
 	{
 		events_ = NoEvent;
-		writing_ = false;
 		update();
+		writing_ = false;
 	}
 	void set_revnets(int revents)
 	{

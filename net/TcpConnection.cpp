@@ -79,7 +79,7 @@ void TcpConnection::handleClose()
 {
 	if(state_ == kDisconnecting || state_ == kConnected) 
 	{
-		printf("%ld to close connection %s\n", gettid(), name_.c_str());
+	printf("%ld to close connection %s\n", gettid(), name_.c_str());
 		state_ = kDisconnected;
 		loop_->assertInLoopThread();	
 		channel_->disableAll();
@@ -104,12 +104,7 @@ void TcpConnection::handleError()
 {
 	fprintf(stderr, "TcpConnection error in %s in %ld\n", name_.c_str(), gettid());
 	perror("Conn errno");
-}
-
-void TcpConnection::closeConnection()
-{
-	if(state_ == kConnected || state_ == kConnecting)
-	{
+} void TcpConnection::closeConnection() { if(state_ == kConnected || state_ == kConnecting) {
 		loop_->QueueInLoop(boost::bind(&TcpConnection::closeConnectionInLoop, shared_from_this()));
 	}
 }

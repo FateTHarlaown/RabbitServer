@@ -70,7 +70,7 @@ int main(int argc, char* argv[])
   int numThreads = 0;
   if (argc > 1)
   {
-    benchmark = true;
+    benchmark = false;
     numThreads = atoi(argv[1]);
   }
 
