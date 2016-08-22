@@ -30,6 +30,8 @@ public:
 	void setMessageCallback(const MessageCallback & func);
 	void setConnectionCallback(const ConnectionCallback & func);
 	void setCloseCallBack(const CloseCallback & func);
+	//the callback function just remove connection Ptr from map in TcpServer
+	void setRemoveConnectionCallBack(const CloseCallback & func);
 	void connectionEstablish();
 	void connectionDestroyed();
 	void closeConnection();
@@ -67,6 +69,7 @@ public:
 private:
 	void handleRead();
 	void handleClose();
+	void handleHup();
 	void handleWrite();
 	void handleError();
 	void closeConnectionInLoop();
@@ -84,6 +87,7 @@ private:
 	ConnectionCallback connectionCallback_;
 	MessageCallback messageCallback_;
 	CloseCallback closeCallback_;
+	CloseCallback removeConnectionFromMap;
 	Buffer inBuffer_;
 	Buffer outBuffer_;
 	boost::any context_;

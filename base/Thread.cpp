@@ -52,6 +52,7 @@ struct ThreadData
 		{
 			Rabbit::CurrentThread::t_threadName = "crashed";
 			fprintf(stderr, "some exception caught in Thread %s\n", name_.c_str());
+			perror("");
 			abort();
 		}
 	}

@@ -1,5 +1,6 @@
 #include <string>
 #include <stdio.h>
+#include <string.h>
 #include <boost/bind.hpp>
 #include <errno.h>
 #include "EventLoop.h"
@@ -64,13 +65,13 @@ void TcpConnection::handleRead()
 
 void TcpConnection::connectionEstablish()
 {
-	//now just test the reading function
+	channel_->tie(shared_from_this());
 	channel_->setReadCallBack(boost::bind(&TcpConnection::handleRead, this));
 	channel_->setCloseCallBack(boost::bind(&TcpConnection::handleClose, this));
 	channel_->setErrorCallBack(boost::bind(&TcpConnection::handleError, this));	
 	channel_->setWriteCallBack(boost::bind(&TcpConnection::handleWrite,this));
+	channel_->setHupCallback(boost::bind(&TcpConnection::handleHup, this));
 	channel_->enableReading();
-	channel_->tie(shared_from_this());
 	state_ = kConnected;
 	connectionCallback_(shared_from_this());
 }
@@ -79,7 +80,7 @@ void TcpConnection::handleClose()
 {
 	if(state_ == kDisconnecting || state_ == kConnected) 
 	{
-	printf("%ld to close connection %s\n", gettid(), name_.c_str());
+		printf("%ld to close connection %s\n", gettid(), name_.c_str());
 		state_ = kDisconnected;
 		loop_->assertInLoopThread();	
 		channel_->disableAll();
@@ -102,9 +103,14 @@ void TcpConnection::connectionDestroyed()
 
 void TcpConnection::handleError() 
 {
-	fprintf(stderr, "TcpConnection error in %s in %ld\n", name_.c_str(), gettid());
-	perror("Conn errno");
-} void TcpConnection::closeConnection() { if(state_ == kConnected || state_ == kConnecting) {
+	int e = Socket::getSockError(channel_->fd());
+	char buf[255];
+	printf("%s\n", strerror_r(e, buf, sizeof buf)); 
+} 
+
+void TcpConnection::closeConnection() 
+{ 
+	if(state_ == kConnected || state_ == kConnecting) {
 		loop_->QueueInLoop(boost::bind(&TcpConnection::closeConnectionInLoop, shared_from_this()));
 	}
 }
@@ -208,3 +214,16 @@ void TcpConnection::handleWrite()
 		}
 	}
 }
+
+
+void TcpConnection::setRemoveConnectionCallBack(const CloseCallback & func)
+{
+	removeConnectionFromMap = func;	
+}
+
+void TcpConnection::handleHup()
+{
+	connectionDestroyed();
+	removeConnectionFromMap(shared_from_this());
+}
+

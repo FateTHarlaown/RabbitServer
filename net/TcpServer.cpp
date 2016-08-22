@@ -64,6 +64,7 @@ void TcpServer::newConnetion(int fd, const NetAddr  peer)
 	conn->setMessageCallback(messageCallback_);
 	conn->setConnectionCallback(connectionCallback_);
 	conn->setCloseCallBack(boost::bind(&TcpServer::removeConnection, this, _1));
+	conn->setRemoveConnectionCallBack(boost::bind(&TcpServer::removeConnectionFromMap, this, _1));
 	connections_[conName] = conn;
 	conn->connectionEstablish();
 }
@@ -96,4 +97,20 @@ void TcpServer::start()
 void TcpServer::setThreadNum(size_t n)
 {
 	loopsThreadPool_->setThreadNum(n);
+}
+
+void TcpServer::removeConnectionFromMap(const ConnectionPtr & conn)
+{
+	//this function will be called by TcpConnection in it's ioLoop, but we should remove it's connectionPtr in base loop
+	loop_->RunInLoop(boost::bind(&TcpServer::removeConnectionFromMapInLoop, this, conn));
+}
+
+void TcpServer::removeConnectionFromMapInLoop(const ConnectionPtr & conn)
+{
+	loop_->assertInLoopThread();	
+	printf("recieved delete ptr from %s\n", conn->name().c_str());
+	std::map<std::string, ConnectionPtr>::iterator it = connections_.find(conn->name());
+	assert(it != connections_.end());
+	connections_.erase(it);
+	printf("have remove ptr from map for %s\n", conn->name().c_str());
 }

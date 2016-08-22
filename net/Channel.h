@@ -39,6 +39,11 @@ public:
 		closeCallback = func;
 	}
 
+	void setHupCallback(const EventCallbackFunction & func)
+	{
+		hupCallback = func;
+	}
+
 	void handleEvent();
 	void enableReading()
 	{
@@ -130,6 +135,7 @@ private:
 	EventCallbackFunction writeCallback;
 	EventCallbackFunction errorCallback;
 	EventCallbackFunction closeCallback;
+	EventCallbackFunction hupCallback;
 	void handleEventWithGuard();
 	const static int NoEvent;
 	const static int ReadEvent;

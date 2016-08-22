@@ -39,27 +39,25 @@ void Channel::handleEvent()
 }
 void Channel::handleEventWithGuard()
 {
-		if(revents_ & (EPOLLIN | EPOLLPRI | EPOLLRDHUP))
-		{
-			if(revents_ & EPOLLRDHUP)
-				printf("EPOLLRDHUP now will use read %ld\n", gettid());
-			else if(revents_ & EPOLLPRI)
-				printf("EPOLLPRI now will use read %ld\n", gettid());
-			else if(revents_ & EPOLLIN)
-				if(readCallback)
-					readCallback();
-		}
 		if(revents_ & EPOLLERR)
 		{
 			printf("error happened in %ld\n", gettid());
 			if(errorCallback)
 				errorCallback();
 		}
-		if(revents_ & EPOLLHUP && !(revents_ & EPOLLIN))
+		if(revents_ & (EPOLLIN | EPOLLPRI | EPOLLRDHUP | EPOLLHUP))
 		{
-			//printf("EPOLLHUP now will close Connection in %ld\n", gettid());
-			if(closeCallback)
-				closeCallback();
+			if(revents_ & EPOLLHUP)
+			{
+				printf("EPOLLHUP now will close Connection in %ld\n", gettid());
+				if(hupCallback)
+					hupCallback();
+			}
+			else
+			{
+				if(readCallback)
+					readCallback();
+			}
 		}
 		if(revents_ & EPOLLOUT)
 		{

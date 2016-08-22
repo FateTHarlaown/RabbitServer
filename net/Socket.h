@@ -27,6 +27,7 @@ public:
 	int acceptConnection(NetAddr & peer);
 	int connectTo(NetAddr remoteAddr);
 	static const int BACKLOG = 200;
+	static int getSockError(int sockFd);
 
 private:
 	void setNoBlock();

@@ -33,6 +33,8 @@ private:
 	void newConnetion(int fd, const NetAddr peer);
 	void removeConnection(const ConnectionPtr & conn);
 	void removeConnectionInLoop(const ConnectionPtr & conn);
+	void removeConnectionFromMap(const ConnectionPtr & conn);
+	void removeConnectionFromMapInLoop(const ConnectionPtr & conn);
 	EventLoop * loop_; 
 	std::string name_;
 	boost::scoped_ptr<Acceptor> acceptor_;	

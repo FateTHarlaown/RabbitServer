@@ -137,3 +137,18 @@ void Socket::setNoBlock()
 	option = option | O_NONBLOCK; 
 	fcntl(fd_, F_SETFL, option);
 }
+
+int Socket::getSockError(int sockFd)
+{
+    int optval;
+    socklen_t optlen = static_cast<socklen_t>(sizeof optval);
+
+	if (::getsockopt(sockFd, SOL_SOCKET, SO_ERROR, &optval, &optlen) < 0)
+    {
+        return errno;
+    }
+    else
+    {
+        return optval;
+    }
+}
